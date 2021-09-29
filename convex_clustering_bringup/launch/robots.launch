@@ -3,7 +3,7 @@
   <!-- No namespace here as we will share this description. 
        Access with slash at the beginning -->
   <arg name="gpu" default="true"/>
-  <param name="robot_description" command="$(find xacro)/xacro --inorder $(find convex_clustering_description)/urdf/base_velodyne.urdf.xacro gpu:=$(arg gpu)"/>
+  <param name="robot_description" command="$(find xacro)/xacro --inorder $(find vrep_holonomic_description)/urdf/base_velodyne.urdf.xacro gpu:=$(arg gpu)"/>
 
 
   <!-- BEGIN ROBOT 1-->

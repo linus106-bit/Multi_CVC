@@ -1,7 +1,6 @@
 <?xml version="1.0"?>
 <launch>
   <arg name="use_sim_time" default="true"/>
-
   <arg name="robot_name"/>
   <arg name="init_pos" />
   <arg name="init_roll" default="0"/>
