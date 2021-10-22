@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>convex_clustering_code</name>
+  <version>0.0.0</version>
+  <description>The convex_clustering_code package</description>
+  <maintainer email="linus@todo.todo">linus</maintainer>
+  <license>TODO</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <depend>libpcl-all-dev</depend>
+  <depend>pcl_ros</depend>
+  <depend>roscpp</depend>
+  <depend>sensor_msgs</depend>
+  <depend>std_msgs</depend>
+  <depend>genmsg</depend>
+  <export></export>
+</package>

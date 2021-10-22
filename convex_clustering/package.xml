@@ -8,5 +8,6 @@
   <buildtool_depend>catkin</buildtool_depend>
   <exec_depend>convex_clustering_bringup</exec_depend>
   <exec_depend>convex_clustering_description</exec_depend>
+  <exec_depend>convex_clustering_code</exec_depend>
   <export><metapackage/></export>
 </package>

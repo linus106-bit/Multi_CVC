@@ -1,0 +1,4 @@
+<?xml version="1.0"?>
+<launch>
+  <node pkg='convex_clustering_code' type='convex_clustering_code_node' name='convex_clustering_code' output="screen"/>
+</launch>

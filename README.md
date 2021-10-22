@@ -14,6 +14,7 @@ catkin_make --only-pkg-with-deps convex_clustering
 
 ``` bash
 roslaunch convex_clustering_bringup gazebo.launch
-
 roslaunch convex_clustering_bringup model_main.launch
 ```
+
+
