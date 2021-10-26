@@ -73,6 +73,7 @@ class CVC{
 		void build_hash_table(const std::vector<PointAPR>& vapr, std::unordered_map<int, Voxel> &map_out);
 		void find_neighbors(int polar, int range, int azimuth, std::vector<int>& neighborindex);
 		bool most_frequent_value(std::vector<int> values, std::vector<int> &cluster_index);
+		bool cluster_result(std::vector<int> cluster_indices, std::vector<std::vector<pcl::PointXYZ>> &cluster_results, const pcl::PointCloud<pcl::PointXYZ>& cloud_IN);
 		void mergeClusters(std::vector<int>& cluster_indices, int idx1, int idx2);
 		std::vector<int> cluster(std::unordered_map<int, Voxel> &map_in,const std::vector<PointAPR>& vapr);
 		void process();

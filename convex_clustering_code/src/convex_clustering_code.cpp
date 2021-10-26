@@ -20,19 +20,27 @@ void CVC::cloudCallback(const sensor_msgs::PointCloud2ConstPtr& input){
     pcl::PointCloud<pcl::PointXYZ>::Ptr cluster_point(new pcl::PointCloud<pcl::PointXYZ>);
     pcl::fromROSMsg (*input, *cluster_point); // sensor_msgs::PointCloud to pcl::Pointcloud
 
-	std::cout<< "cluster_point " << cluster_point->points.size() << std::endl;
+	std::cout << "cluster_point " << cluster_point->points.size() << std::endl;
 	std::vector<PointAPR> capr;
 	calculateAPR(*cluster_point, capr);
 
-	std::cout<<"capr : "<<capr.size() << std::endl;
 	std::unordered_map<int, Voxel> hash_table;
 	build_hash_table(capr, hash_table);
 
 	std::vector<int> cluster_indices;	
 	cluster_indices = cluster(hash_table, capr);
-
+    std::cout << "ok" << std::endl;
 	std::vector<int> cluster_id;
 	most_frequent_value(cluster_indices, cluster_id);
+    std::cout << "ok2" << std::endl;
+    for (int i = 0; i < cluster_id.size(); i++) {
+        std::cout << cluster_id[i] << ' ';
+    int max = *max_element(cluster_indices.begin(), cluster_indices.end());
+    std::cout << "ok3" << std::endl;
+    std::vector<std::vector<pcl::PointXYZ>> cluster_results(max+1);
+    std::cout << "ok4" << std::endl;
+    cluster_result(cluster_indices,cluster_results,*cluster_point);
+    }
 }
 
 void CVC::spinNode()
@@ -117,7 +125,6 @@ void CVC::build_hash_table(const std::vector<PointAPR>& vapr, std::unordered_map
     auto maxPosition2 = max_element(pi.begin(), pi.end());
 }
 
-// Gaussian을 따르는 clustering 방법을 추가해서 output으로 받기 추가
 void CVC::find_neighbors(int polar, int range, int azimuth, std::vector<int>& neighborindex) {
 	for (int z = azimuth - 1; z <= azimuth + 1; z++) {
 		if (z < 0 || z > (height_ -1)) {
@@ -134,10 +141,10 @@ void CVC::find_neighbors(int polar, int range, int azimuth, std::vector<int>& ne
 				if (x < 0 ) {
 					px=width_-1;
 				}
-                    if (x>(width_-1)) {
+                    if (x > (width_-1)) {
                          px=0;
                     }
-				neighborindex.push_back((px*(length_)+y)+z*(length_)*(width_));
+				neighborindex.push_back((px*(length_)+y)+z*(length_)*(width_)); // Point가 속한 Voxel의 인접한 Voxel_index를 push_backs
             }
         }
     }
@@ -156,24 +163,53 @@ bool CVC::most_frequent_value(std::vector<int> values, std::vector<int> &cluster
 	}
 	int max = 0, maxi;
 	std::vector<std::pair<int, int>> tr(histcounts.begin(), histcounts.end());
-        sort(tr.begin(),tr.end(),compare_cluster);
-        for(int i = 0 ; i< tr.size(); ++i){
-            if(tr[i].second>10){
-            cluster_index.push_back(tr[i].first);
+    sort(tr.begin(),tr.end(),compare_cluster); // 위의 방법으로 정렬
+    for(int i = 0 ; i< tr.size(); ++i){
+        if (tr[i].second > 10){
+        cluster_index.push_back(tr[i].first);
         }
     }
 	return true;
 }
 
+bool CVC::cluster_result(std::vector<int> cluster_indices, std::vector<std::vector<pcl::PointXYZ>> &cluster_results, const pcl::PointCloud<pcl::PointXYZ>& cloud_IN) {
+    for (int i = 0 ; i < cluster_indices.size() ; i++){
+        if (cluster_indices[i] != -1){
+            std::cout << "cnt :" << i << ", voxel_index :" << cluster_indices[i] <<std::endl;
+            cluster_results[cluster_indices[i]].push_back(cloud_IN.points[i]);
+        }
+    }
+
+    std::vector<std::vector<float>> centroids;
+    for (int j = 0 ; j < cluster_results.size() ; j++){
+        float centroid_x = 0;
+        float centroid_y = 0;
+        float centroid_z = 0;
+        for (int k = 0 ; k < cluster_results[j].size() ; k++){
+            centroid_x += cluster_results[j][k].x;
+            centroid_y += cluster_results[j][k].y;
+            centroid_z += cluster_results[j][k].z;
+        }
+        std::vector<float> centroid;
+        centroid.push_back(centroid_x/cluster_results[j].size());
+        centroid.push_back(centroid_y/cluster_results[j].size());
+        centroid.push_back(centroid_z/cluster_results[j].size());
+        centroids.push_back(centroid);
+    }
+	return true;
+}
+
+
+
 std::vector<int> CVC::cluster(std::unordered_map<int, Voxel> &map_in,const std::vector<PointAPR>& vapr){
     int current_cluster = 0;
-    printf(" ------ Doing CVC cluster ------- \n");
+    std::cout << " ------ Doing CVC cluster ------- " << std::endl;
     std::vector<int> cluster_indices = std::vector<int>(vapr.size(), -1);
 
     for(int i = 0; i< vapr.size(); ++i){
 
         if (cluster_indices[i] != -1)
-        continue;
+			continue;
         int azimuth_index = int((vapr[i].azimuth - min_azimuth_)*180/M_PI/deltaA_);
         int polar_index   = int(vapr[i].polar_angle*180/M_PI/deltaP_);
         int range_index   = int((vapr[i].range-min_range_)/deltaR_);
@@ -223,20 +259,16 @@ std::vector<int> CVC::cluster(std::unordered_map<int, Voxel> &map_in,const std::
                             }
                     }
                 }
-
             }
         }
-               
         if (cluster_indices[i] == -1) {
             current_cluster++;
             cluster_indices[i] = current_cluster;
-            for(int s =0 ; s<neightbors.size(); ++s){             
+            for(int s = 0 ; s < neightbors.size(); ++s){             
                 cluster_indices[neightbors[s]] = current_cluster;
             }
         }
     }
-    int max = *max_element(cluster_indices.begin(), cluster_indices.end());
-    cout << "Cluster indices max: " << max << endl;
 	return cluster_indices;
 }
 
