@@ -1,11 +1,15 @@
 #include "convex_clustering_code/convex_clustering_code.h"
 
+
+
 bool CVC::initialize()
 { 
     if (ros::ok())
     {
         // Initialize Subscriber for input Pointcloud2 6
         input_points = nh_.subscribe("velodyne_points", 1, &CVC::cloudCallback, this);
+        marker_pub = nh_.advertise<visualization_msgs::MarkerArray>("marker/node", 10);
+
         time_init = ros::Time::now().toSec(); // for real world test
         return true;
     }
@@ -29,17 +33,16 @@ void CVC::cloudCallback(const sensor_msgs::PointCloud2ConstPtr& input){
 
 	std::vector<int> cluster_indices;	
 	cluster_indices = cluster(hash_table, capr);
-    std::cout << "ok" << std::endl;
 	std::vector<int> cluster_id;
 	most_frequent_value(cluster_indices, cluster_id);
-    std::cout << "ok2" << std::endl;
     for (int i = 0; i < cluster_id.size(); i++) {
         std::cout << cluster_id[i] << ' ';
     int max = *max_element(cluster_indices.begin(), cluster_indices.end());
-    std::cout << "ok3" << std::endl;
     std::vector<std::vector<pcl::PointXYZ>> cluster_results(max+1);
-    std::cout << "ok4" << std::endl;
-    cluster_result(cluster_indices,cluster_results,*cluster_point);
+    std::vector<std::vector<float>>* centroids(new std::vector<std::vector<float>>);
+    cluster_result(cluster_indices,cluster_results,*cluster_point,*centroids);
+    // Publish Marker
+    PublishMarker(*centroids);
     }
 }
 
@@ -172,15 +175,16 @@ bool CVC::most_frequent_value(std::vector<int> values, std::vector<int> &cluster
 	return true;
 }
 
-bool CVC::cluster_result(std::vector<int> cluster_indices, std::vector<std::vector<pcl::PointXYZ>> &cluster_results, const pcl::PointCloud<pcl::PointXYZ>& cloud_IN) {
+bool CVC::cluster_result(std::vector<int> cluster_indices, std::vector<std::vector<pcl::PointXYZ>> &cluster_results, 
+                        const pcl::PointCloud<pcl::PointXYZ>& cloud_IN, std::vector<std::vector<float>> &centroids) {
     for (int i = 0 ; i < cluster_indices.size() ; i++){
-        if (cluster_indices[i] != -1){
-            std::cout << "cnt :" << i << ", voxel_index :" << cluster_indices[i] <<std::endl;
+        if (cluster_indices[i] != -1) {
+            // std::cout << "cnt :" << i << ", voxel_index :" << cluster_indices[i] <<std::endl;
             cluster_results[cluster_indices[i]].push_back(cloud_IN.points[i]);
         }
     }
 
-    std::vector<std::vector<float>> centroids;
+
     for (int j = 0 ; j < cluster_results.size() ; j++){
         float centroid_x = 0;
         float centroid_y = 0;
@@ -278,4 +282,56 @@ void CVC::mergeClusters(std::vector<int>& cluster_indices, int idx1, int idx2) {
 			cluster_indices[i] = idx2;
 		}
 	}
+}
+
+void CVC::PublishMarker(std::vector<std::vector<float>> &centroids){ 
+    Point p; 
+    // rviz_visual_tools::RvizVisualTools visual_tools_("/velodyne_front_base_link","/rviz_visual_markers");
+    // visual_tools_.deleteAllMarkers();
+    std::vector<Point> vec_point;
+    for (int i = 1 ; i < centroids.size() ; i++){
+
+        p.x = centroids[i][0];
+        p.y = centroids[i][1];
+        p.z = centroids[i][2];
+        vec_point.push_back(p);
+    }
+    std::cout << "num of Centroids : " << vec_point.size() << std::endl;
+    visualization_msgs::MarkerArray node_arr;
+    int cnt = 0;
+    for (size_t i = 0; i < vec_point.size(); i++){
+        Point o_node = vec_point[i];
+
+        visualization_msgs::Marker node; 
+        node.header.frame_id = "/velodyne_front_base_link";
+        // map frame 기준 
+        node.header.stamp = ros::Time::now();
+        node.type = visualization_msgs::Marker::SPHERE; 
+        node.id = i+1; 
+        node.action = visualization_msgs::Marker::ADD; 
+        node.pose.orientation.w = 1.0; 
+        node.pose.position.x = o_node.x; //노드의 x 좌표 
+        node.pose.position.y = o_node.y; //노드의 y 좌표 
+        // Points are green 
+        node.color.g = 0.5; 
+        node.color.a = 1.0; 
+        node.scale.x = 1.0; 
+        node.scale.y = 1.0; 
+        node_arr.markers.push_back(node);
+
+        visualization_msgs::Marker node_name; 
+        node_name.header.frame_id = "/velodyne_front_base_link"; // frame 기준 
+        node_name.header.stamp = ros::Time::now(); 
+        node_name.text = std::to_string(i+1); 
+        node_name.color.a = 1.0; 
+        node_name.scale.z = 1.0; 
+        node_name.type = visualization_msgs::Marker::TEXT_VIEW_FACING; 
+        node_name.id = i + 100; 
+        node_name.action = visualization_msgs::Marker::ADD; 
+        node_name.pose.orientation.w = 1.0; 
+        node_name.pose.position.x = o_node.x; //노드의 x 좌표 
+        node_name.pose.position.y = o_node.y; //노드의 y 좌표 
+        node_arr.markers.push_back(node_name);
+    }
+    marker_pub.publish(node_arr);
 }

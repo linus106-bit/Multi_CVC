@@ -1,8 +1,14 @@
 #ifndef CONVEX_CLUSTERING_CODE_H
 #define CONVEX_CLUSTERING_CODE_H
+
 //ROS
-#include <sensor_msgs/PointCloud.h>
 #include "pcl_ros/point_cloud.h"
+#include <rviz_visual_tools/rviz_visual_tools.h>
+// ROS msgs
+#include <sensor_msgs/PointCloud.h>
+#include <visualization_msgs/MarkerArray.h>
+#include <visualization_msgs/Marker.h>
+
 //PCL
 #include <pcl/io/pcd_io.h>
 #include <pcl/features/integral_image_normal.h>
@@ -37,6 +43,11 @@ std::string toString(const T& t) {
 	return oss.str();
 }
 
+struct Point { 
+    float x;
+    float y; 
+    float z;
+};
 
 struct PointAPR{
    float azimuth;
@@ -73,12 +84,14 @@ class CVC{
 		void build_hash_table(const std::vector<PointAPR>& vapr, std::unordered_map<int, Voxel> &map_out);
 		void find_neighbors(int polar, int range, int azimuth, std::vector<int>& neighborindex);
 		bool most_frequent_value(std::vector<int> values, std::vector<int> &cluster_index);
-		bool cluster_result(std::vector<int> cluster_indices, std::vector<std::vector<pcl::PointXYZ>> &cluster_results, const pcl::PointCloud<pcl::PointXYZ>& cloud_IN);
+		bool cluster_result(std::vector<int> cluster_indices, std::vector<std::vector<pcl::PointXYZ>> &cluster_results, const pcl::PointCloud<pcl::PointXYZ>& cloud_IN, std::vector<std::vector<float>> &centroids) ;
 		void mergeClusters(std::vector<int>& cluster_indices, int idx1, int idx2);
 		std::vector<int> cluster(std::unordered_map<int, Voxel> &map_in,const std::vector<PointAPR>& vapr);
+		void PublishMarker(std::vector<std::vector<float>> &centroids);
 		void process();
 
 		ros::Subscriber input_points;
+		ros::Publisher marker_pub;
 
 	private:
 		ros::NodeHandle nh_;
