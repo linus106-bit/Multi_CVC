@@ -1,15 +1,13 @@
 #include "convex_clustering_code/convex_clustering_code.h"
 
 
-
 bool CVC::initialize()
 { 
     if (ros::ok())
     {
         // Initialize Subscriber for input Pointcloud2 6
-        input_points = nh_.subscribe("velodyne_points", 1, &CVC::cloudCallback, this);
-        marker_pub = nh_.advertise<visualization_msgs::MarkerArray>("marker/node", 10);
-
+        input_points = nh_.subscribe("input_pointcloud", 1, &CVC::cloudCallback, this);
+        marker_pub = nh_.advertise<visualization_msgs::MarkerArray>("output_marker", 10);
         time_init = ros::Time::now().toSec(); // for real world test
         return true;
     }
@@ -39,7 +37,7 @@ void CVC::cloudCallback(const sensor_msgs::PointCloud2ConstPtr& input){
         std::cout << cluster_id[i] << ' ';
     int max = *max_element(cluster_indices.begin(), cluster_indices.end());
     std::vector<std::vector<pcl::PointXYZ>> cluster_results(max+1);
-    std::vector<std::vector<float>>* centroids(new std::vector<std::vector<float>>);
+    std::vector<pcl::PointXYZ>* centroids(new std::vector<pcl::PointXYZ>);
     cluster_result(cluster_indices,cluster_results,*cluster_point,*centroids);
     // Publish Marker
     PublishMarker(*centroids);
@@ -52,7 +50,10 @@ void CVC::spinNode()
     ros::spinOnce();
 }
 
-
+float CVC::euc_dist(Vector3d P1, Vector3d P2)
+{
+    return std::sqrt((P1(0)-P2(0))*(P1(0)-P2(0)) + (P1(1)-P2(1))*(P1(1)-P2(1)) + (P1(2)-P2(2))*(P1(2)-P2(2)));
+}
 
 bool compare_cluster(std::pair<int,int> a,std::pair<int,int> b){
     return a.second>b.second; // 두번째 항 비교
@@ -175,33 +176,159 @@ bool CVC::most_frequent_value(std::vector<int> values, std::vector<int> &cluster
 	return true;
 }
 
+
+
+std::vector<pcl::PointXYZ> CVC::getCentroid( std::vector<std::vector<pcl::PointXYZ>> cluster_results)
+{
+    // To separate each cluster out of the vector<PointIndices> we have to 
+    // iterate through cluster_indices, create a new PointCloud for each 
+    // entry and write all points of the current cluster in the PointCloud. 
+    
+    
+    // std::vector<int>::const_iterator pit;
+    std::cout << "ok15 " << std::endl;
+    std::vector<pcl::PointXYZ> clusterCentroids;
+    clusterCentroids.reserve(cluster_results.size());
+    std::cout << "ok16: " << cluster_results.size() << std::endl;
+    for (int it = 0 ; it < cluster_results.size(); ++it) 
+    {
+        Vector3d Pi; 
+        Vector3d Pj; 
+        Vector3d Pk; 
+
+        Vector3d Vij; // vector between Pi, Pj
+        Vector3d Po(0,0,0); // origin vector
+
+        // 1. get Pi, Pj (First, Second Point)
+        // get Vij norm and select vector that maximizes norm
+        float dist_max = -1;
+        for(int i=0; i < cluster_results[it].size(); i++)
+        {
+            for(int j=i+1; j < cluster_results[it].size(); j++)
+            {
+                float dist;     
+
+                Vector3d P1; 
+                Vector3d P2;     
+                // pit = i;              
+                P1(0) = cluster_results[it][i].x;
+                P1(1) = cluster_results[it][i].y;
+                P1(2) = cluster_results[it][i].z;
+                // pit = j;
+                P2(0) = cluster_results[it][j].x;
+                P2(1) = cluster_results[it][j].y;
+                P2(2) = cluster_results[it][j].z;
+
+                dist = euc_dist(P1, P2);
+                if (dist > dist_max) 
+                {
+                    Pi = P1; 
+                    Pj = P2;
+                    Vij(0) = (P2(1)-P1(1))/(P2(0)-P1(0));
+                    Vij(1) = -1;
+                    Vij(2) = Vij(0)*(-P1(0))+P1(1);
+                    dist_max = dist;
+                }
+            }
+        }
+
+        // 2. get Pk (third Point)
+        dist_max = -1; // initialize dist_max 
+        for(int k=0; k < cluster_results[it].size(); k++)
+        {
+            float dist;
+
+            Vector3d P3;
+            // pit = k;
+            P3(0) = cluster_results[it][k].x;
+            P3(1) = cluster_results[it][k].y;
+            P3(2) = cluster_results[it][k].z;
+
+            // Euclidean distance between point and line
+            dist = std::abs(Vij(0)*P3(0) + Vij(1)*P3(1) + Vij(2))/std::sqrt(Vij(0)*Vij(0) + Vij(1)*Vij(1));
+            if (dist > dist_max)
+            {
+                if(Pj==P3 || Pi==P3)
+                {
+                    continue;
+                }
+                Pk = P3;
+                dist_max = dist;
+            }
+        }
+        
+        // 3. circumcenter coordinates from cross and dot products
+        float A = Pj(0) - Pi(0);
+        float B = Pj(1) - Pi(1);
+        float C = Pk(0) - Pi(0);
+        float D = Pk(1) - Pi(1);
+        float E = A * (Pi(0) + Pj(0)) + B * (Pi(1) + Pj(1));
+        float F = C * (Pi(0) + Pk(0)) + D * (Pi(1) + Pk(1));
+        float G = 2.0 * (A * (Pk(1) - Pj(1)) - B * (Pk(0) - Pj(0)));
+
+        pcl::PointXYZ centroid; 
+        if(G==0)
+        {
+            centroid.x = Pi(0);
+            centroid.y = Pi(1);
+            centroid.z = 0.0;
+        }
+
+        else
+        {
+            centroid.x = (D * E - B * F) / G;
+            centroid.y = (A * F - C * E) / G;
+            centroid.z = 0.0;
+        }
+        clusterCentroids.push_back(centroid);
+
+        // set radius for publishObstacles
+        Vector3d V_centroid(centroid.x, centroid.y, centroid.z);
+        float obstacle_radius = euc_dist(V_centroid, Pj);
+        if (obstacle_radius > 0.3) // obstacle radius constraint
+        {
+            obstacle_radius = 0.3;
+        }
+    }
+    return clusterCentroids;
+}
+
+
+
+
 bool CVC::cluster_result(std::vector<int> cluster_indices, std::vector<std::vector<pcl::PointXYZ>> &cluster_results, 
-                        const pcl::PointCloud<pcl::PointXYZ>& cloud_IN, std::vector<std::vector<float>> &centroids) {
+                        const pcl::PointCloud<pcl::PointXYZ>& cloud_IN, std::vector<pcl::PointXYZ> &centroids) {
     for (int i = 0 ; i < cluster_indices.size() ; i++){
         if (cluster_indices[i] != -1) {
             // std::cout << "cnt :" << i << ", voxel_index :" << cluster_indices[i] <<std::endl;
             cluster_results[cluster_indices[i]].push_back(cloud_IN.points[i]);
         }
     }
+    centroids = getCentroid(cluster_results);
 
+    // for (int j = 0 ; j < cluster_results.size() ; j++){
+        
 
-    for (int j = 0 ; j < cluster_results.size() ; j++){
-        float centroid_x = 0;
-        float centroid_y = 0;
-        float centroid_z = 0;
-        for (int k = 0 ; k < cluster_results[j].size() ; k++){
-            centroid_x += cluster_results[j][k].x;
-            centroid_y += cluster_results[j][k].y;
-            centroid_z += cluster_results[j][k].z;
-        }
-        std::vector<float> centroid;
-        centroid.push_back(centroid_x/cluster_results[j].size());
-        centroid.push_back(centroid_y/cluster_results[j].size());
-        centroid.push_back(centroid_z/cluster_results[j].size());
-        centroids.push_back(centroid);
-    }
+        // float centroid_x = 0;
+        // float centroid_y = 0;
+        // float centroid_z = 0;
+        // for (int k = 0 ; k < cluster_results[j].size() ; k++){
+        //     centroid_x += cluster_results[j][k].x;
+        //     centroid_y += cluster_results[j][k].y;
+        //     centroid_z += cluster_results[j][k].z;
+        // }
+        // std::vector<float> centroid;
+        // centroid.push_back(centroid_x/cluster_results[j].size());
+        // centroid.push_back(centroid_y/cluster_results[j].size());
+        // centroid.push_back(centroid_z/cluster_results[j].size());
+        // centroids.push_back(centroid);
+    // }
 	return true;
 }
+
+
+
+
 
 
 
@@ -209,7 +336,6 @@ std::vector<int> CVC::cluster(std::unordered_map<int, Voxel> &map_in,const std::
     int current_cluster = 0;
     std::cout << " ------ Doing CVC cluster ------- " << std::endl;
     std::vector<int> cluster_indices = std::vector<int>(vapr.size(), -1);
-
     for(int i = 0; i< vapr.size(); ++i){
 
         if (cluster_indices[i] != -1)
@@ -284,16 +410,18 @@ void CVC::mergeClusters(std::vector<int>& cluster_indices, int idx1, int idx2) {
 	}
 }
 
-void CVC::PublishMarker(std::vector<std::vector<float>> &centroids){ 
+
+void CVC::PublishMarker(std::vector<pcl::PointXYZ> &centroids){ // Rviz에 Cluster ID 별로 visualization
     Point p; 
-    // rviz_visual_tools::RvizVisualTools visual_tools_("/velodyne_front_base_link","/rviz_visual_markers");
-    // visual_tools_.deleteAllMarkers();
+    nh_.getParam("input_color_green", RVIZ_COLOR_GREEN);
+    nh_.getParam("input_color_red", RVIZ_COLOR_RED);
+    nh_.getParam("rviz_base", VELODYNE_BASE);
+    cout << "velodyne_base is :" << VELODYNE_BASE << endl;
     std::vector<Point> vec_point;
     for (int i = 1 ; i < centroids.size() ; i++){
-
-        p.x = centroids[i][0];
-        p.y = centroids[i][1];
-        p.z = centroids[i][2];
+        p.x = centroids[i].x;
+        p.y = centroids[i].y;
+        p.z = centroids[i].z;
         vec_point.push_back(p);
     }
     std::cout << "num of Centroids : " << vec_point.size() << std::endl;
@@ -303,9 +431,9 @@ void CVC::PublishMarker(std::vector<std::vector<float>> &centroids){
         Point o_node = vec_point[i];
 
         visualization_msgs::Marker node; 
-        node.header.frame_id = "/velodyne_front_base_link";
+        node.header.frame_id = VELODYNE_BASE; 
         // map frame 기준 
-        node.header.stamp = ros::Time::now();
+        node.header.stamp = ros::Time::now(); 
         node.type = visualization_msgs::Marker::SPHERE; 
         node.id = i+1; 
         node.action = visualization_msgs::Marker::ADD; 
@@ -313,14 +441,15 @@ void CVC::PublishMarker(std::vector<std::vector<float>> &centroids){
         node.pose.position.x = o_node.x; //노드의 x 좌표 
         node.pose.position.y = o_node.y; //노드의 y 좌표 
         // Points are green 
-        node.color.g = 0.5; 
+        node.color.g = RVIZ_COLOR_GREEN; 
+        node.color.r = RVIZ_COLOR_RED; 
         node.color.a = 1.0; 
         node.scale.x = 1.0; 
         node.scale.y = 1.0; 
-        node_arr.markers.push_back(node);
+        node_arr.markers.push_back(node); 
 
         visualization_msgs::Marker node_name; 
-        node_name.header.frame_id = "/velodyne_front_base_link"; // frame 기준 
+        node_name.header.frame_id = VELODYNE_BASE; // frame 기준 
         node_name.header.stamp = ros::Time::now(); 
         node_name.text = std::to_string(i+1); 
         node_name.color.a = 1.0; 
@@ -335,3 +464,4 @@ void CVC::PublishMarker(std::vector<std::vector<float>> &centroids){
     }
     marker_pub.publish(node_arr);
 }
+

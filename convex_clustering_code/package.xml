@@ -15,6 +15,5 @@
   <depend>std_msgs</depend>
   <depend>genmsg</depend>
   <depend>visualization_msgs</depend>
-  <depend>rviz_visual_tools</depend>
   <export></export>
 </package>

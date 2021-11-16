@@ -8,12 +8,12 @@ int main(int argc, char **argv)
 {
     try
     {
-       // ROS init
+        // ROS init
         ros::init(argc, argv, "convex_clustering");
         ros::NodeHandle nh;
         vector<float> param(3,0);
-        param[0] = 2; // deltaA_
-        param[1] = 0.4; // deltaR_
+        param[0] = 2;   // deltaA_ 
+        param[1] = 0.4; // deltaR_ 
         param[2] = 1.5; // deltaP_ 
         CVC Cluster(param);
         if(!Cluster.initialize())
@@ -27,12 +27,10 @@ int main(int argc, char **argv)
             }
         }
     }
-
     catch (ros::Exception& e)
     {
-        ROS_ERROR("multiple_object_tracking_lidar_node: Error occured: %s", e.what());
+        ROS_ERROR("Curved Clustering: Error occured: %s", e.what());
         exit(1);
-    }  
-
+    }
     return 0;
 }

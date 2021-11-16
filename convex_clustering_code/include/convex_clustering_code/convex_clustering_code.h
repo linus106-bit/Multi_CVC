@@ -3,7 +3,7 @@
 
 //ROS
 #include "pcl_ros/point_cloud.h"
-#include <rviz_visual_tools/rviz_visual_tools.h>
+// #include <rviz_visual_tools/rviz_visual_tools.h>
 // ROS msgs
 #include <sensor_msgs/PointCloud.h>
 #include <visualization_msgs/MarkerArray.h>
@@ -32,9 +32,16 @@
 //C++
 #include <iostream>
 #include <stdlib.h>
+#include <cmath>
 #include <unordered_map>
 #include <algorithm>
 #include <limits>
+#include <Eigen/Dense>
+#include <Eigen/Core>
+
+
+using namespace Eigen;
+
 
 template<typename T> 
 std::string toString(const T& t) {
@@ -81,15 +88,16 @@ class CVC{
 		void cloudCallback(const sensor_msgs::PointCloud2ConstPtr& input);
 		void spinNode();
 		void calculateAPR(const pcl::PointCloud<pcl::PointXYZ>& cloud_IN, std::vector<PointAPR>& vapr);
+		float euc_dist(Vector3d P1, Vector3d P2);
 		void build_hash_table(const std::vector<PointAPR>& vapr, std::unordered_map<int, Voxel> &map_out);
 		void find_neighbors(int polar, int range, int azimuth, std::vector<int>& neighborindex);
 		bool most_frequent_value(std::vector<int> values, std::vector<int> &cluster_index);
-		bool cluster_result(std::vector<int> cluster_indices, std::vector<std::vector<pcl::PointXYZ>> &cluster_results, const pcl::PointCloud<pcl::PointXYZ>& cloud_IN, std::vector<std::vector<float>> &centroids) ;
+		bool cluster_result(std::vector<int> cluster_indices, std::vector<std::vector<pcl::PointXYZ>> &cluster_results, const pcl::PointCloud<pcl::PointXYZ>& cloud_IN, std::vector<pcl::PointXYZ> &centroids) ;
 		void mergeClusters(std::vector<int>& cluster_indices, int idx1, int idx2);
 		std::vector<int> cluster(std::unordered_map<int, Voxel> &map_in,const std::vector<PointAPR>& vapr);
-		void PublishMarker(std::vector<std::vector<float>> &centroids);
+		void PublishMarker(std::vector<pcl::PointXYZ> &centroids);
 		void process();
-
+		std::vector<pcl::PointXYZ> getCentroid(std::vector<std::vector<pcl::PointXYZ>> cluster_results);
 		ros::Subscriber input_points;
 		ros::Publisher marker_pub;
 
@@ -107,7 +115,13 @@ class CVC{
 		int length_ = 0;
 		int width_  = 0;
 		int height_ = 0;
+
+		float RVIZ_COLOR_GREEN;
+		float RVIZ_COLOR_RED;
+		std::string VELODYNE_BASE;
 };
+
+
 
 #endif
 
