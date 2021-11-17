@@ -16,5 +16,15 @@ catkin_make --only-pkg-with-deps convex_clustering
 roslaunch convex_clustering_bringup gazebo.launch
 roslaunch convex_clustering_bringup model_main.launch
 ```
+or (Using rosbag)
+``` bash
+cd ~/catkin_ws/src/convex_clustering
+rosbag play -l new_test_2lidar.bag
+```
 
+### Curved-Voxel Clustering
 
+``` bash
+roslaunch convex_clustering_code cluster.launch
+roslaunch convex_clustering_code merge.launch
+```
