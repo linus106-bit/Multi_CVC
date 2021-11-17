@@ -9,13 +9,25 @@ find_package(catkin REQUIRED COMPONENTS
   std_msgs
   genmsg
   visualization_msgs
+  message_generation
 )
 
+add_message_files(
+  FILES
+  centroid.msg
+  centroid_list.msg
+)
+
+generate_messages(
+  DEPENDENCIES
+  std_msgs
+  convex_clustering_code
+)
 
 catkin_package(
   INCLUDE_DIRS include
   LIBRARIES ${PROJECT_NAME}
-  CATKIN_DEPENDS pcl_ros roscpp sensor_msgs std_msgs genmsg
+  CATKIN_DEPENDS pcl_ros roscpp sensor_msgs std_msgs genmsg message_runtime
   # DEPENDS system_lib eigen
 )
 
@@ -42,7 +54,11 @@ target_link_libraries (${PROJECT_NAME}_node
 		${PROJECT_NAME}
 		${catkin_LIBRARIES} )
 
-
+add_executable(${PROJECT_NAME}_merge src/${PROJECT_NAME}_merge.cpp)
+add_dependencies(${PROJECT_NAME}_merge ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+target_link_libraries (${PROJECT_NAME}_merge 
+    ${PROJECT_NAME}
+    ${catkin_LIBRARIES} )
 
 
 

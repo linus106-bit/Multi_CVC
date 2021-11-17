@@ -3,11 +3,15 @@
 
 //ROS
 #include "pcl_ros/point_cloud.h"
-// #include <rviz_visual_tools/rviz_visual_tools.h>
+
+
+
 // ROS msgs
 #include <sensor_msgs/PointCloud.h>
 #include <visualization_msgs/MarkerArray.h>
 #include <visualization_msgs/Marker.h>
+#include <convex_clustering_code/centroid.h>
+#include <convex_clustering_code/centroid_list.h>
 
 //PCL
 #include <pcl/io/pcd_io.h>
@@ -68,6 +72,7 @@ struct Voxel{
    std::vector<int> index;
 };
 
+
 class CVC{
 	public:
 		CVC();
@@ -98,8 +103,10 @@ class CVC{
 		void PublishMarker(std::vector<pcl::PointXYZ> &centroids);
 		void process();
 		std::vector<pcl::PointXYZ> getCentroid(std::vector<std::vector<pcl::PointXYZ>> cluster_results);
+		void PublishCentroid(std::vector<pcl::PointXYZ> &centroids);
 		ros::Subscriber input_points;
 		ros::Publisher marker_pub;
+		ros::Publisher centroid_pub;
 
 	private:
 		ros::NodeHandle nh_;

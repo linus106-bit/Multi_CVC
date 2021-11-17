@@ -3,9 +3,10 @@
   <node pkg='convex_clustering_code' type='convex_clustering_code_node' name='convex_clustering_code_1' output="screen" >
     <remap from='input_pointcloud' to='velodyne_points_1' />
     <remap from='output_marker' to='output_marker_1' />
-    <remap from='input_color_green' to='convex_clustering_code_1/color_green' />
-    <remap from='input_color_red' to='convex_clustering_code_1/color_red' />
-    <remap from='rviz_base' to='convex_clustering_code_1/velodyne_base' />
+    <remap from='input_color_green' to='convex_clustering_code_1/color_green' /> <!-- rviz에서 보일 장애물의 색 green -->
+    <remap from='input_color_red' to='convex_clustering_code_1/color_red' /> <!-- rviz에서 보일 장애물의 색 red -->
+    <remap from='rviz_base' to='convex_clustering_code_1/velodyne_base' /> <!-- 다른 라이다에서 param을 받아오기 위해서 param 주소로 rviz_base를 변경-->
+    <remap from='centroids' to='centroids_1' /> 
 
     <param name='color_green' value='0.5' />
     <param name='color_red' value='0' />
@@ -19,6 +20,7 @@
     <remap from='input_color_green' to='convex_clustering_code_2/color_green' />
     <remap from='input_color_red' to='convex_clustering_code_2/color_red' />
     <remap from='rviz_base' to='convex_clustering_code_2/velodyne_base' />
+    <remap from='centroids' to='centroids_2' /> 
 
     <param name='color_green' value='0' /> 
     <param name='color_red' value='0.5' />
