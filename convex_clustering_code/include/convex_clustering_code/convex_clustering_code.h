@@ -72,6 +72,7 @@ struct Voxel{
    std::vector<int> index;
 };
 
+void centroidCallback(const convex_clustering_code::centroid_list &centroid_list);
 
 class CVC{
 	public:
@@ -103,7 +104,7 @@ class CVC{
 		void PublishMarker(std::vector<pcl::PointXYZ> &centroids);
 		void process();
 		std::vector<pcl::PointXYZ> getCentroid(std::vector<std::vector<pcl::PointXYZ>> cluster_results);
-		void PublishCentroid(std::vector<pcl::PointXYZ> &centroids);
+		void PublishCentroid(std::vector<pcl::PointXYZ> &centroids, std::vector<std::vector<pcl::PointXYZ>> &cluster_results);
 		ros::Subscriber input_points;
 		ros::Publisher marker_pub;
 		ros::Publisher centroid_pub;

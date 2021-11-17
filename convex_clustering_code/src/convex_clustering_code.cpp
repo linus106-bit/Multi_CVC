@@ -42,7 +42,7 @@ void CVC::cloudCallback(const sensor_msgs::PointCloud2ConstPtr& input){
     cluster_result(cluster_indices,cluster_results,*cluster_point,*centroids);
     // Publish Marker
     PublishMarker(*centroids);
-    PublishCentroid(*centroids);
+    PublishCentroid(*centroids,cluster_results);
     }
 }
 
@@ -465,17 +465,18 @@ void CVC::PublishMarker(std::vector<pcl::PointXYZ> &centroids){ // Rviz에 Clust
     marker_pub.publish(node_arr);
 }
 
-void CVC::PublishCentroid(std::vector<pcl::PointXYZ> &centroids){
+void CVC::PublishCentroid(std::vector<pcl::PointXYZ> &centroids, std::vector<std::vector<pcl::PointXYZ>> &cluster_results){
     convex_clustering_code::centroid_list centroid_arr;
     for (int i = 1 ; i < centroids.size() ; i++){
         convex_clustering_code::centroid centroid_msg; // Publish 하기 위해서 msg 선언 (위에 있는 &centroids는 실제로 위에서 계산한 Centroid * 혼동하지 않기)
-
+        centroid_msg.id = i;
         centroid_msg.x = centroids[i].x;
         centroid_msg.y = centroids[i].y;
         centroid_msg.z = centroids[i].z;
         centroid_msg.radius = 1.0;
-        centroid_msg.num = i;
+        centroid_msg.num = cluster_results[i].size();
         centroid_arr.group.push_back(centroid_msg);
     }
     centroid_pub.publish(centroid_arr);
 }
+
