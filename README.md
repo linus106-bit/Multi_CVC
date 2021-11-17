@@ -1,4 +1,4 @@
-# Multi-LiDAR Pointcloud Segmentation using curvex-voxel clustering and Bayesian uncertainty estimation
+# Multi-LiDAR Pointcloud Segmentation using curvex-voxel clustering with Real-Time Performance
 
 ## Install
 
