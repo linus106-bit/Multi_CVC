@@ -72,7 +72,16 @@ struct Voxel{
    std::vector<int> index;
 };
 
-void centroidCallback(const convex_clustering_code::centroid_list &centroid_list);
+// curved-voxel cluster merge
+void centroidCallback_1(const convex_clustering_code::centroid_list& centroid_list);
+void centroidCallback_2(const convex_clustering_code::centroid_list& centroid_list);
+float calculate_distance(pcl::PointXYZ centroid_1, int i, pcl::PointXYZ centroid_2, int j);
+void PublishMarkers(std::vector<pcl::PointXYZ> &centroids);
+void MergeClusters(std::vector<pcl::PointXYZ> centroids_1, std::vector<pcl::PointXYZ> centroids_2, std::vector<pcl::PointXYZ> &centroids);
+std::vector<pcl::PointXYZ> centroid_vector_1;
+std::vector<pcl::PointXYZ> centroid_vector_2;
+ros::Publisher markers_pub;
+
 
 class CVC{
 	public:

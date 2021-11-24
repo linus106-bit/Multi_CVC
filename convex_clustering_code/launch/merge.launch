@@ -1,6 +1,5 @@
 <?xml version="1.0"?>
 <launch>  
   <node pkg='convex_clustering_code' type='convex_clustering_code_merge' name='convex_clustering_code_merge' output="screen" >
-    <remap from='input_centroid' to='centroids_1' />
   </node>
 </launch>

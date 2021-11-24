@@ -186,7 +186,7 @@
     </VLP-16>
 
     <VLP-16 parent="base_link" name="velodyne_rear" topic="/velodyne_points_2" hz="10" samples="440" gpu="${gpu}">
-        <origin xyz="2 2 0.55" rpy="0 0 3.1415" />
+        <origin xyz="2 2 0.55" rpy="0 0 3.1415" /> <!-- 3.1415 -->
     </VLP-16>
 
     <!-- Front sonar sensor -->

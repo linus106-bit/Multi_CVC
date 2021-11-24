@@ -2,7 +2,7 @@
 
 
 bool CVC::initialize()
-{ 
+{
     if (ros::ok())
     {
         // Initialize Subscriber for input Pointcloud2 6
@@ -454,7 +454,7 @@ void CVC::PublishMarker(std::vector<pcl::PointXYZ> &centroids){ // Rviz에 Clust
         node_name.text = std::to_string(i+1); 
         node_name.color.a = 1.0; 
         node_name.scale.z = 1.0; 
-        node_name.type = visualization_msgs::Marker::TEXT_VIEW_FACING; 
+        node_name.type = visualization_msgs::Marker::TEXT_VIEW_FACING;
         node_name.id = i + 100; 
         node_name.action = visualization_msgs::Marker::ADD; 
         node_name.pose.orientation.w = 1.0; 
