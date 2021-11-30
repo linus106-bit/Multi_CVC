@@ -8,7 +8,7 @@
   <arg name="headless" default="false"/>
   <arg name="debug" default="false"/>
   <arg name="verbose" default="true"/>
-  <arg name="world_name" default="$(find convex_clustering_description)/worlds/test3.world"/>
+  <arg name="world_name" default="$(find convex_clustering_description)/worlds/test5.world"/>
 
   <arg name="init_pos_x" default="0.0"/>
   <arg name="init_pos_y" default="0.0"/>
