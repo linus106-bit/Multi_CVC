@@ -1,0 +1,394 @@
+<?xml version="1.0"?>
+
+<robot xmlns:sensor="http://playerstage.sourceforge.net/gazebo/xmlschema/#sensor"
+       xmlns:controller="http://playerstage.sourceforge.net/gazebo/xmlschema/#controller"
+       xmlns:interface="http://playerstage.sourceforge.net/gazebo/xmlschema/#interface"
+       xmlns:xacro="http://ros.org/wiki/xacro">
+    
+    <gazebo reference="base_link">
+        <material>Gazebo/DarkGrey</material>
+    </gazebo>
+  
+    <gazebo reference="vehicle_v2_base">
+    </gazebo>
+
+    <!-- front right wheel -->
+    <gazebo reference="fr_wheel_link">
+        <material>Gazebo/Orange</material>
+    </gazebo>
+
+    <!-- front left wheel -->
+    <gazebo reference="fl_wheel_link">
+        <material>Gazebo/Orange</material>
+    </gazebo>
+
+    <!-- back right wheel -->
+    <gazebo reference="br_wheel_link">
+        <material>Gazebo/Orange</material>
+    </gazebo>
+
+    <!-- back left wheel -->
+    <gazebo reference="bl_wheel_link">
+        <material>Gazebo/Orange</material>
+    </gazebo>
+
+    <!-- IMU sensor -->
+    <gazebo reference="imu_link">
+        <sensor type="imu" name="imu">
+        <always_on>true</always_on>
+        </sensor>
+        <material>Gazebo/FlatBlack</material>
+    </gazebo>
+
+    <gazebo>
+      <plugin name="p3d_base_controller" filename="libgazebo_ros_p3d.so">
+        <alwaysOn>true</alwaysOn>
+        <updateRate>50.0</updateRate>
+        <bodyName>base_footprint</bodyName>
+        <topicName>pose</topicName>
+        <gaussianNoise>0.01</gaussianNoise>
+        <frameName>world</frameName>
+        <xyzOffsets>0 0 0</xyzOffsets>
+        <rpyOffsets>0 0 0</rpyOffsets>
+      </plugin>
+    </gazebo>
+
+    <gazebo>
+        <plugin name="imu_plugin" filename="libgazebo_ros_imu.so">
+            <alwaysOn>true</alwaysOn>
+            <bodyName>imu_link</bodyName>
+            <frameName>imu_link</frameName>
+            <topicName>imu</topicName>
+            <serviceName>imu_service</serviceName>
+            <gaussianNoise>0.0</gaussianNoise>
+            <updateRate>200</updateRate>
+            <imu>
+                <noise>
+                <type>gaussian</type>
+                <rate>
+                    <mean>0.0</mean>
+                    <stddev>2e-4</stddev>
+                    <bias_mean>0.0000075</bias_mean>
+                    <bias_stddev>0.0000008</bias_stddev>
+                </rate>
+                <accel>
+                    <mean>0.0</mean>
+                    <stddev>1.7e-2</stddev>
+                    <bias_mean>0.1</bias_mean>
+                    <bias_stddev>0.001</bias_stddev>
+                </accel>
+                </noise>
+            </imu>
+        </plugin>
+    </gazebo>  
+
+    <!-- Lidar sensor 
+    <gazebo reference="base_scan">
+        <material>Gazebo/FlatBlack</material>
+        <sensor type="gpu_ray" name="lds_lfcd_sensor">
+        <pose>0 0 0 0 0 0</pose>
+        <visualize>true</visualize>
+        <update_rate>50</update_rate>
+        <ray>
+            <scan>
+            <horizontal>
+                <samples>360</samples>
+                <resolution>1.0</resolution>
+                <min_angle>0.0</min_angle>
+                <max_angle>6.28319</max_angle>
+            </horizontal>
+            </scan>
+            <range>
+            <min>0.05</min>
+            <max>12</max>
+            <resolution>0.015</resolution>
+            </range>
+            <noise>
+            <type>gaussian</type>
+            <mean>0.0</mean>
+            <stddev>0.01</stddev>
+            </noise>
+        </ray>
+        <plugin name="gazebo_ros_lds_lfcd_controller" filename="libgazebo_ros_gpu_laser.so">
+            <topicName>scan</topicName>
+            <frameName>base_scan</frameName>
+        </plugin>
+        </sensor>
+    </gazebo> -->
+
+    <!--Sonar sensor 
+    <gazebo reference="base_sonar_front">
+        <material>Gazebo/FlatBlack</material>
+        <sensor type="ray" name="sonar_front_sensor">
+        <pose>0 0 0 0 0 0</pose>
+        <visualize>true</visualize>
+        <update_rate>50</update_rate>
+        <ray>
+          <scan>
+            <horizontal>
+              <samples>1</samples>
+              <resolution>1</resolution>
+              <min_angle>-0.01</min_angle>
+              <max_angle>0.01</max_angle>
+            </horizontal>
+            <vertical>
+              <samples>1</samples>
+              <resolution>1</resolution>
+              <min_angle>-0.01</min_angle>
+              <max_angle>0.01</max_angle>
+            </vertical>
+          </scan>
+          <range>
+            <min>0.01</min>
+            <max>2.0</max>
+            <resolution>3</resolution>
+          </range>
+        </ray>
+
+        <plugin name="gazebo_ros_sonar_controller" filename="libgazebo_ros_range.so">
+            <topicName>sonar_front</topicName>
+            <frameName>base_sonar_front</frameName>
+            <fov>0.5</fov>
+            <radiation>ultrasound</radiation>
+        </plugin>
+      </sensor>
+    </gazebo> 
+
+    <gazebo reference="base_sonar_rear">
+        <material>Gazebo/FlatBlack</material>
+        <sensor type="ray" name="sonar_rear_sensor">
+        <pose>0 0 0 0 0 0</pose>
+        <visualize>true</visualize>
+        <update_rate>50</update_rate>
+        <ray>
+          <scan>
+            <horizontal>
+              <samples>1</samples>
+              <resolution>1</resolution>
+              <min_angle>-0.01</min_angle>
+              <max_angle>0.01</max_angle>
+            </horizontal>
+            <vertical>
+              <samples>1</samples>
+              <resolution>1</resolution>
+              <min_angle>-0.01</min_angle>
+              <max_angle>0.01</max_angle>
+            </vertical>
+          </scan>
+          <range>
+            <min>0.01</min>
+            <max>2.0</max>
+            <resolution>3</resolution>
+          </range>
+        </ray>
+
+        <plugin name="gazebo_ros_sonar_controller" filename="libgazebo_ros_range.so">
+            <topicName>sonar_rear</topicName>
+            <frameName>base_sonar_rear</frameName>
+            <fov>0.5</fov>
+            <radiation>ultrasound</radiation>
+        </plugin>
+      </sensor>
+    </gazebo>
+
+    <gazebo reference="base_sonar_left">
+        <material>Gazebo/FlatBlack</material>
+        <sensor type="ray" name="sonar_left_sensor">
+        <pose>0 0 0 0 0 0</pose>
+        <visualize>true</visualize>
+        <update_rate>50</update_rate>
+        <ray>
+          <scan>
+            <horizontal>
+              <samples>1</samples>
+              <resolution>1</resolution>
+              <min_angle>-0.01</min_angle>
+              <max_angle>0.01</max_angle>
+            </horizontal>
+            <vertical>
+              <samples>1</samples>
+              <resolution>1</resolution>
+              <min_angle>-0.01</min_angle>
+              <max_angle>0.01</max_angle>
+            </vertical>
+          </scan>
+          <range>
+            <min>0.01</min>
+            <max>2.0</max>
+            <resolution>3</resolution>
+          </range>
+        </ray>
+
+        <plugin name="gazebo_ros_sonar_controller" filename="libgazebo_ros_range.so">
+            <topicName>sonar_left</topicName>
+            <frameName>base_sonar_left</frameName>
+            <fov>0.5</fov>
+            <radiation>ultrasound</radiation>
+        </plugin>
+      </sensor>
+    </gazebo>
+
+    <gazebo reference="base_sonar_right">
+        <material>Gazebo/FlatBlack</material>
+        <sensor type="ray" name="sonar_right_sensor">
+        <pose>0 0 0 0 0 0</pose>
+        <visualize>true</visualize>
+        <update_rate>50</update_rate>
+        <ray>
+          <scan>
+            <horizontal>
+              <samples>1</samples>
+              <resolution>1</resolution>
+              <min_angle>-0.01</min_angle>
+              <max_angle>0.01</max_angle>
+            </horizontal>
+            <vertical>
+              <samples>1</samples>
+              <resolution>1</resolution>
+              <min_angle>-0.01</min_angle>
+              <max_angle>0.01</max_angle>
+            </vertical>
+          </scan>
+          <range>
+            <min>0.01</min>
+            <max>2.0</max>
+            <resolution>3</resolution>
+          </range>
+        </ray>
+
+        <plugin name="gazebo_ros_sonar_controller" filename="libgazebo_ros_range.so">
+            <topicName>sonar_right</topicName>
+            <frameName>base_sonar_right</frameName>
+            <fov>0.5</fov>
+            <radiation>ultrasound</radiation>
+        </plugin>
+      </sensor>
+    </gazebo> -->
+
+    <!-- Kinect sensor -->
+    <!-- <gazebo reference="base_kinect">
+        <sensor type="depth" name="kinect_depth_frame_sensor">
+        <update_rate>20.0</update_rate>
+        <camera name="kinect_depth_camera">
+            <horizontal_fov>1.3962634</horizontal_fov>
+            <image>
+            <width>128</width>
+            <height>96</height>
+            <format>R8G8B8</format>
+            </image>
+            <clip>
+            <near>0.02</near>
+            <far>300</far>
+            </clip>
+            <noise>
+            <type>gaussian</type>
+            <mean>0.0</mean>
+            <stddev>0.007</stddev>
+            </noise>
+        </camera>
+        <plugin name="kinect_depth_frame_controller" filename="libgazebo_ros_openni_kinect.so">
+            <alwaysOn>true</alwaysOn>
+            <updateRate>20.0</updateRate>
+            <cameraName>kinect_depth_camera</cameraName>
+            <imageTopicName>camera/ir/image_raw</imageTopicName>
+            <cameraInfoTopicName>camera/ir/camera_info</cameraInfoTopicName>
+            <depthImageTopicName>camera/depth/image_raw</depthImageTopicName>
+            <depthImageInfoTopicName>camera/depth/camera_info</depthImageInfoTopicName>
+            <pointCloudTopicName>camera/depth/points</pointCloudTopicName>
+            <frameName>kinect_depth_optical_frame</frameName>
+            <hackBaseline>0.07</hackBaseline>
+            <distortion_k1>0.00000001</distortion_k1>
+            <distortion_k2>0.00000001</distortion_k2>
+            <distortion_k3>0.00000001</distortion_k3>
+            <distortion_t1>0.00000001</distortion_t1>
+            <distortion_t2>0.00000001</distortion_t2>
+        </plugin>
+        </sensor>
+        
+      <sensor type="camera" name="kinect_rgb_frame_sensor">
+        <update_rate>20.0</update_rate>
+        <camera name="kinect_rgb_camera">
+            <horizontal_fov>1.3962634</horizontal_fov>
+            <image>
+            <width>128</width>
+            <height>96</height>
+            <format>R8G8B8</format>
+            </image>
+            <clip>
+            <near>0.02</near>
+            <far>300</far>
+            </clip>
+            <noise>
+            <type>gaussian</type>
+            <mean>0.0</mean>
+            <stddev>0.007</stddev>
+            </noise>
+        </camera>
+        <plugin name="kinect_rgb_frame_controller" filename="libgazebo_ros_camera.so">
+            <alwaysOn>true</alwaysOn>
+            <updateRate>20.0</updateRate>
+            <cameraName>kinect_rgb_camera</cameraName>
+            <imageTopicName>camera/rgb/image_raw</imageTopicName>
+            <cameraInfoTopicName>camera/rgb/camera_info</cameraInfoTopicName>
+            <frameName>kinect_rgb_optical_frame</frameName>
+            <hackBaseline>0.07</hackBaseline>
+            <pointCloudCutoff>0.5</pointCloudCutoff>
+            <distortion_k1>0.00000001</distortion_k1>
+            <distortion_k2>0.00000001</distortion_k2>
+            <distortion_k3>0.00000001</distortion_k3>
+            <distortion_t1>0.00000001</distortion_t1>
+            <distortion_t2>0.00000001</distortion_t2>
+        </plugin>
+      </sensor>
+    </gazebo>  -->
+
+    
+    <gazebo>
+        <plugin name="dummy_drive" filename="libgazebo_ros_planar_move.so">
+            <legacyMode>false</legacyMode>
+            <alwaysOn>true</alwaysOn>
+            <updateRate>100</updateRate>
+            <covariance_x>0.000100</covariance_x>
+            <covariance_y>0.000100</covariance_y>
+            <covariance_yaw>0.010000</covariance_yaw>
+            <broadcastTF>100</broadcastTF>
+            <torque>5</torque>
+            <commandTopic>cmd_vel</commandTopic>
+            <odometryTopic>odom</odometryTopic>
+            <odometryFrame>odom</odometryFrame>
+            <odometryRate>100.0</odometryRate>
+            <robotBaseFrame>base_footprint</robotBaseFrame>
+        </plugin>
+    </gazebo>
+
+    <!-- <gazebo>
+        <plugin name="dumpy_drive" filename="libgazebo_ros_force_based_move.so">
+            <robotNamespace>robot</robotNamespace>
+            <commandTopic>cmd_vel</commandTopic>
+            <odometryTopic>odom</odometryTopic>
+            <odometryFrame>odom</odometryFrame>
+            <yaw_velocity_p_gain>100.0</yaw_velocity_p_gain>
+            <x_velocity_p_gain>10000.0</x_velocity_p_gain>
+            <y_velocity_p_gain>10000.0</y_velocity_p_gain>
+            <robotBaseFrame>base_link</robotBaseFrame>
+            <odometryRate>100.0</odometryRate>
+            <publishOdometryTf>true</publishOdometryTf>
+        </plugin>
+    </gazebo> -->
+
+    <!-- <gazebo> 
+      <plugin name="ros_force_based_controller" filename="libgazebo_ros_force_based_move.so">
+        <commandTopic>cmd_vel</commandTopic>
+        <odometryTopic>odom</odometryTopic>
+        <odometryFrame>odom</odometryFrame>
+        <odometryRate>100.0</odometryRate>
+        <robotBaseFrame>base_link</robotBaseFrame>
+        <publishOdometryTf>true</publishOdometryTf>
+        <yaw_velocity_p_gain>500</yaw_velocity_p_gain>
+        <x_velocity_p_gain>1000</x_velocity_p_gain>
+        <y_velocity_p_gain>1000</y_velocity_p_gain>
+        <cmdVelTimeOut>0.25</cmdVelTimeOut>
+      </plugin> 
+    </gazebo> -->
+
+</robot>

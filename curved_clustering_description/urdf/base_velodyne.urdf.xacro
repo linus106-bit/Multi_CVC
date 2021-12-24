@@ -6,8 +6,8 @@
        xmlns:xacro="http://ros.org/wiki/xacro"
        name="vehicle_v2" >
 
-    <xacro:include filename="$(find vrep_holonomic_description)/urdf/base_velodyne.gazebo.xacro"/>
-    <xacro:include filename="$(find vrep_holonomic_description)/urdf/materials.urdf.xacro"/>
+    <xacro:include filename="$(find curved_clustering_description)/urdf/base_velodyne.gazebo.xacro"/>
+    <xacro:include filename="$(find curved_clustering_description)/urdf/materials.urdf.xacro"/>
     
 
     <xacro:arg name="gpu" default="false"/>
@@ -26,7 +26,7 @@
         <visual>
             <origin xyz="0 0 0" rpy="0 0 0" />
             <geometry>
-                <mesh filename="package://vrep_holonomic_description/meshes/base_link.STL" />
+                <mesh filename="package://curved_clustering_description/meshes/base_link.STL" />
             </geometry>
             <material name="material_light_grey"/>
         </visual>
@@ -53,7 +53,7 @@
         <visual>
             <origin xyz="0 0 0" rpy="0 0 0" />
             <geometry>
-                <mesh filename="package://vrep_holonomic_description/meshes/br_wheel_link.STL" />
+                <mesh filename="package://curved_clustering_description/meshes/br_wheel_link.STL" />
             </geometry>
             <material name="material_orange"/>
         </visual>
@@ -81,7 +81,7 @@
         <visual>
             <origin xyz="0 0 0" rpy="0 0 0" />
             <geometry>
-                <mesh filename="package://vrep_holonomic_description/meshes/bl_wheel_link.STL" />
+                <mesh filename="package://curved_clustering_description/meshes/bl_wheel_link.STL" />
             </geometry>
             <material name="material_orange"/>
         </visual>
@@ -109,7 +109,7 @@
         <visual>
             <origin xyz="0 0 0" rpy="0 0 0" />
             <geometry>
-                <mesh filename="package://vrep_holonomic_description/meshes/fr_wheel_link.STL" />
+                <mesh filename="package://curved_clustering_description/meshes/fr_wheel_link.STL" />
             </geometry>
             <material name="material_orange"/>
         </visual>
@@ -137,7 +137,7 @@
         <visual>
             <origin xyz="0 0 0" rpy="0 0 0" />
             <geometry>
-                <mesh filename="package://vrep_holonomic_description/meshes/fl_wheel_link.STL" />
+                <mesh filename="package://curved_clustering_description/meshes/fl_wheel_link.STL" />
             </geometry>
             <material name="material_orange"/>
         </visual>
@@ -199,7 +199,7 @@
         <visual>
             <origin xyz="0 0 0" rpy="0 0 0" />
             <geometry>
-                <mesh filename="package://vrep_holonomic_description/meshes/max_sonar_ez4.dae"/>
+                <mesh filename="package://curved_clustering_description/meshes/max_sonar_ez4.dae"/>
             </geometry>
         </visual>
         <collision>
@@ -225,7 +225,7 @@
         <visual>
             <origin xyz="0 0 0" rpy="0 0 0" />
             <geometry>
-                <mesh filename="package://vrep_holonomic_description/meshes/max_sonar_ez4.dae"/>
+                <mesh filename="package://curved_clustering_description/meshes/max_sonar_ez4.dae"/>
             </geometry>
         </visual>
         <collision>
@@ -251,7 +251,7 @@
         <visual>
             <origin xyz="0 0 0" rpy="0 0 0" />
             <geometry>
-                <mesh filename="package://vrep_holonomic_description/meshes/max_sonar_ez4.dae"/>
+                <mesh filename="package://curved_clustering_description/meshes/max_sonar_ez4.dae"/>
             </geometry>
         </visual>
         <collision>
@@ -277,7 +277,7 @@
         <visual>
             <origin xyz="0 0 0" rpy="0 0 0" />
             <geometry>
-                <mesh filename="package://vrep_holonomic_description/meshes/max_sonar_ez4.dae"/>
+                <mesh filename="package://curved_clustering_description/meshes/max_sonar_ez4.dae"/>
             </geometry>
         </visual>
         <collision>
@@ -303,13 +303,13 @@
         <visual>
             <origin xyz="0.0 0.0 0.0" rpy="0 0 0" />
             <geometry>
-                <mesh filename="package://vrep_holonomic_description/meshes/kinect.dae"/>
+                <mesh filename="package://curved_clustering_description/meshes/kinect.dae"/>
             </geometry>
         </visual>
         <collision>
             <origin xyz="0.0 0.0 0.0" rpy="0 0 0" />
             <geometry>
-                <mesh filename="package://vrep_holonomic_description/meshes/kinect.dae"/>
+                <mesh filename="package://curved_clustering_description/meshes/kinect.dae"/>
             </geometry>
         </collision>
     </link>
