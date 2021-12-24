@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.0.2)
-project(convex_clustering_bringup)
+project(curved_clustering_bringup)
 
 find_package(catkin REQUIRED COMPONENTS
   rospy
@@ -19,7 +19,7 @@ include_directories(
 catkin_python_setup()
 
 catkin_install_python(PROGRAMS
-  scripts/convex_bringup.py
+  scripts/curved_bringup.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 
