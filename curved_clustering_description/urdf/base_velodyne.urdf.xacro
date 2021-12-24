@@ -1,0 +1,375 @@
+<?xml version="1.0"?>
+
+<robot xmlns:sensor="http://playerstage.sourceforge.net/gazebo/xmlschema/#sensor"
+       xmlns:controller="http://playerstage.sourceforge.net/gazebo/xmlschema/#controller"
+       xmlns:interface="http://playerstage.sourceforge.net/gazebo/xmlschema/#interface"
+       xmlns:xacro="http://ros.org/wiki/xacro"
+       name="vehicle_v2" >
+
+    <xacro:include filename="$(find vrep_holonomic_description)/urdf/base_velodyne.gazebo.xacro"/>
+    <xacro:include filename="$(find vrep_holonomic_description)/urdf/materials.urdf.xacro"/>
+    
+
+    <xacro:arg name="gpu" default="false"/>
+    <xacro:property name="gpu" value="$(arg gpu)" />
+    
+    <!-- Base footprint -->
+    <link name="base_footprint"/>
+    
+    <!-- Base link -->
+    <link name="base_link">
+        <inertial>
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <mass value="13.2312244818196" />
+            <inertia ixx="0.967053548924663" ixy="0" ixz="0" iyy="1.30612724440363" iyz="0" izz="0.962964405480844" />
+        </inertial>
+        <visual>
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+                <mesh filename="package://vrep_holonomic_description/meshes/base_link.STL" />
+            </geometry>
+            <material name="material_light_grey"/>
+        </visual>
+        <collision>
+        <origin xyz="0 0 0.24" rpy="0 0 0" />
+            <geometry>
+                <box size="0.81 0.59 0.6" />
+            </geometry>
+        </collision>
+    </link>
+    <joint name="base_joint" type="fixed">
+        <parent link="base_footprint"/>
+        <child link="base_link"/>
+        <origin xyz="0.0 0.0 0.0" rpy="0 0 0"/>
+    </joint>
+
+    <!-- Back right wheel -->
+    <link name="br_wheel_link">
+        <inertial>
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <mass value="0.571565980810561" />
+            <inertia ixx="1" ixy="0" ixz="0" iyy="1" iyz="0" izz="1" />
+        </inertial>
+        <visual>
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+                <mesh filename="package://vrep_holonomic_description/meshes/br_wheel_link.STL" />
+            </geometry>
+            <material name="material_orange"/>
+        </visual>
+        <collision>
+            <origin xyz="0 0 0" rpy="0 1.5707 1.5707" />
+            <geometry>
+            <cylinder radius="0.076" length="0.079"/>
+            </geometry>
+        </collision>
+    </link>
+    <joint name="br_wheel_joint" type="continuous">
+        <origin xyz="-0.281 -0.215 -0.020" rpy="0 0 0" />
+        <parent link="base_link" />
+        <child link="br_wheel_link" />
+        <axis xyz="0 -1 0" />
+    </joint>
+
+    <!-- Back left wheel -->
+    <link name="bl_wheel_link">
+        <inertial>
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <mass value="0.571565974939204" />
+            <inertia ixx="1" ixy="0" ixz="0" iyy="1" iyz="0" izz="1" />
+        </inertial>
+        <visual>
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+                <mesh filename="package://vrep_holonomic_description/meshes/bl_wheel_link.STL" />
+            </geometry>
+            <material name="material_orange"/>
+        </visual>
+        <collision>
+            <origin xyz="0 0 0" rpy="0 1.5707 1.5707" />
+            <geometry>
+            <cylinder radius="0.076" length="0.079"/>
+            </geometry>
+        </collision>
+    </link>
+    <joint name="bl_wheel_joint" type="continuous">
+        <origin xyz="-0.281 0.215 -0.020" rpy="0 0 0" />
+        <parent link="base_link" />
+        <child link="bl_wheel_link" />
+        <axis xyz="0 -1 0" />
+    </joint>
+
+    <!-- Front right wheel -->
+    <link name="fr_wheel_link">
+        <inertial>
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <mass value="0.571565974847631" />
+            <inertia ixx="1" ixy="0" ixz="0" iyy="1" iyz="0" izz="1" />
+        </inertial>
+        <visual>
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+                <mesh filename="package://vrep_holonomic_description/meshes/fr_wheel_link.STL" />
+            </geometry>
+            <material name="material_orange"/>
+        </visual>
+        <collision>
+            <origin xyz="0 0 0" rpy="0 1.5707 1.5707" />
+            <geometry>
+            <cylinder radius="0.076" length="0.079"/>
+            </geometry>
+        </collision>
+    </link>
+    <joint name="fr_wheel_joint" type="continuous">
+        <origin xyz="0.281 -0.215 -0.020" rpy="0 0 0" />
+        <parent link="base_link" />
+        <child link="fr_wheel_link" />
+        <axis xyz="0 -1 0" />
+    </joint>
+
+    <!-- Front left wheel -->
+    <link name="fl_wheel_link">
+        <inertial>
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <mass value="0.571565975000551" />
+            <inertia ixx="1" ixy="0" ixz="0" iyy="1" iyz="0" izz="1" />
+        </inertial>
+        <visual>
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+                <mesh filename="package://vrep_holonomic_description/meshes/fl_wheel_link.STL" />
+            </geometry>
+            <material name="material_orange"/>
+        </visual>
+        <collision>
+            <origin xyz="0 0 0" rpy="0 1.5707 1.5707" />
+            <geometry>
+            <cylinder radius="0.076" length="0.079"/>
+            </geometry>
+        </collision>
+    </link>
+    <joint name="fl_wheel_joint" type="continuous">
+        <origin xyz="0.281 0.215 -0.020" rpy="0 0 0" />
+        <parent link="base_link" />
+        <child link="fl_wheel_link" />
+        <axis xyz="0 -1 0" />
+    </joint>
+
+    <!-- IMU sensor -->
+    <link name="imu_link"/>
+    <joint name="imu_joint" type="fixed">
+        <parent link="base_link"/>
+        <child link="imu_link"/>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+    </joint>
+
+    <!-- Scan sensor -->
+    <!-- <joint name="scan_joint_front" type="fixed">
+        <parent link="base_link"/>
+        <child link="velodyne_front"/>
+        <origin xyz="0 0 0.57" rpy="0 0 0"/>
+    </joint>
+    <joint name="scan_joint_rear" type="fixed">
+        <parent link="base_link"/>
+        <child link="velodyne_rear"/>
+        <origin xyz="0 0 0.57" rpy="0 0 0"/>
+    </joint> -->
+    <!-- <xacro:include filename="$(find velodyne_description)/urdf/VLP-16.urdf.xacro"/>
+    <VLP-16 parent="base_link" name="velodyne_front" topic="/velodyne_points_front" hz="10" samples="440" gpu="${gpu}">
+        <origin xyz="0 0 0.55" rpy="s0 0 0" />
+    </VLP-16> -->
+
+
+    <xacro:include filename="$(find velodyne_description)/urdf/VLP-16.urdf.xacro"/>
+    <VLP-16 parent="base_link" name="velodyne_front" topic="/velodyne_points_1" hz="10" samples="440" gpu="${gpu}">
+        <origin xyz="0 0 0.55" rpy="0 0 0" />
+    </VLP-16>
+
+    <VLP-16 parent="base_link" name="velodyne_rear" topic="/velodyne_points_2" hz="10" samples="440" gpu="${gpu}">
+        <origin xyz="2 2 0.55" rpy="0 0 3.1415" /> <!-- 3.1415 -->
+    </VLP-16>
+
+    <!-- Front sonar sensor -->
+    <link name="base_sonar_front">
+        <inertial>
+            <mass value="0.001" />
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <inertia ixx="0.000000017" ixy="0.0" ixz="0.0" iyy="0.000000017" iyz="0.0" izz="0.000000017"/>
+        </inertial>
+        <visual>
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+                <mesh filename="package://vrep_holonomic_description/meshes/max_sonar_ez4.dae"/>
+            </geometry>
+        </visual>
+        <collision>
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+                <box size="0.01 0.01 0.01" />
+            </geometry>
+        </collision>
+    </link>
+    <joint name="sonar_front_sensor_joint" type="fixed">
+        <parent link="base_link"/>
+        <child link="base_sonar_front"/>
+        <origin xyz="0.42 0 0.09" rpy="0 0 0"/>
+    </joint>
+
+    <!-- Rear sonar sensor -->
+    <link name="base_sonar_rear">
+        <inertial>
+            <mass value="0.001" />
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <inertia ixx="0.000000017" ixy="0.0" ixz="0.0" iyy="0.000000017" iyz="0.0" izz="0.000000017"/>
+        </inertial>
+        <visual>
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+                <mesh filename="package://vrep_holonomic_description/meshes/max_sonar_ez4.dae"/>
+            </geometry>
+        </visual>
+        <collision>
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+                <box size="0.01 0.01 0.01" />
+            </geometry>
+        </collision>
+    </link>
+    <joint name="sonar_rear_sensor_joint" type="fixed">
+        <parent link="base_link"/>
+        <child link="base_sonar_rear"/>
+        <origin xyz="-0.41 0 0.09" rpy="0 0 3.1415926535897931"/>
+    </joint>
+
+    <!-- Left sonar sensor -->
+    <link name="base_sonar_left">
+        <inertial>
+            <mass value="0.001" />
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <inertia ixx="0.000000017" ixy="0.0" ixz="0.0" iyy="0.000000017" iyz="0.0" izz="0.000000017"/>
+        </inertial>
+        <visual>
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+                <mesh filename="package://vrep_holonomic_description/meshes/max_sonar_ez4.dae"/>
+            </geometry>
+        </visual>
+        <collision>
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+                <box size="0.01 0.01 0.01" />
+            </geometry>
+        </collision>
+    </link>
+    <joint name="sonar_left_sensor_joint" type="fixed">
+        <parent link="base_link"/>
+        <child link="base_sonar_left"/>
+        <origin xyz="0 0.3 0.09" rpy="0 0 1.57079632679"/>
+    </joint>
+
+    <!-- Right sonar sensor -->
+    <link name="base_sonar_right">
+        <inertial>
+            <mass value="0.001" />
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <inertia ixx="0.000000017" ixy="0.0" ixz="0.0" iyy="0.000000017" iyz="0.0" izz="0.000000017"/>
+        </inertial>
+        <visual>
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+                <mesh filename="package://vrep_holonomic_description/meshes/max_sonar_ez4.dae"/>
+            </geometry>
+        </visual>
+        <collision>
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+                <box size="0.01 0.01 0.01" />
+            </geometry>
+        </collision>
+    </link>
+    <joint name="sonar_right_sensor_joint" type="fixed">
+        <parent link="base_link"/>
+        <child link="base_sonar_right"/>
+        <origin xyz="0 -0.3 0.09" rpy="0 0 -1.57079632679"/>
+    </joint>
+
+    <!-- Kinect sensor -->
+    <link name="base_kinect">
+        <inertial>
+            <mass value="0.01" />
+            <origin xyz="0 0 0" />
+            <inertia ixx="0.001" ixy="0.0" ixz="0.0" iyy="0.001" iyz="0.0" izz="0.001" />
+        </inertial>
+        <visual>
+            <origin xyz="0.0 0.0 0.0" rpy="0 0 0" />
+            <geometry>
+                <mesh filename="package://vrep_holonomic_description/meshes/kinect.dae"/>
+            </geometry>
+        </visual>
+        <collision>
+            <origin xyz="0.0 0.0 0.0" rpy="0 0 0" />
+            <geometry>
+                <mesh filename="package://vrep_holonomic_description/meshes/kinect.dae"/>
+            </geometry>
+        </collision>
+    </link>
+    <joint name="kinect_camera_joint" type="fixed">
+        <parent link="base_link" />
+        <child link="base_kinect" />
+        <origin xyz="0.41 0 0.465" rpy="0 0 0"/>
+    </joint>
+    <!-- 1 -->
+    <link name="kinect_depth_frame">
+        <inertial>
+            <mass value="0.01" />
+            <origin xyz="0 0 0" />
+            <inertia ixx="0.001" ixy="0.0" ixz="0.0" iyy="0.001" iyz="0.0" izz="0.001" />
+        </inertial>
+    </link>
+    <joint name="kinect_camera_depth_joint" type="fixed">
+        <origin xyz="0 0.018 0" rpy="0 0 0" />
+        <parent link="base_kinect" />
+        <child link="kinect_depth_frame" />
+    </joint>
+    <!-- 2 -->
+    <link name="kinect_depth_optical_frame">
+        <inertial>
+            <mass value="0.001" />
+            <origin xyz="0 0 0" />
+            <inertia ixx="0.0001" ixy="0.0" ixz="0.0" iyy="0.0001" iyz="0.0" izz="0.0001" />
+        </inertial>
+    </link>
+    <joint name="kinect_camera_depth_optical_joint" type="fixed">
+        <origin xyz="0 0 0" rpy="-1.57079632679 0 -1.57079632679" />
+        <parent link="kinect_depth_frame" />
+        <child link="kinect_depth_optical_frame" />
+    </joint>
+    <!-- 3 -->
+    <link name="kinect_rgb_frame">
+        <inertial>
+            <mass value="0.001" />
+            <origin xyz="0 0 0" />
+            <inertia ixx="0.0001" ixy="0.0" ixz="0.0" iyy="0.0001" iyz="0.0" izz="0.0001" />
+        </inertial>
+    </link>
+    <joint name="kinect_camera_rgb_joint" type="fixed">
+        <origin xyz="0 -0.005 0" rpy="0 0 0" />
+        <parent link="base_kinect" />
+        <child link="kinect_rgb_frame" />
+    </joint>
+    <!-- 4 -->
+    <link name="kinect_rgb_optical_frame">
+        <inertial>
+            <mass value="0.001" />
+            <origin xyz="0 0 0" />
+            <inertia ixx="0.0001" ixy="0.0" ixz="0.0" iyy="0.0001" iyz="0.0" izz="0.0001" />
+        </inertial>
+    </link>
+    <joint name="kinect_camera_rgb_optical_joint" type="fixed">
+        <origin xyz="0 0 0" rpy="-1.57079632679 0 -1.57079632679" />
+        <parent link="kinect_rgb_frame" />
+        <child link="kinect_rgb_optical_frame" />
+    </joint>
+    
+
+</robot>

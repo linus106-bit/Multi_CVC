@@ -1,0 +1,5 @@
+<?xml version="1.0"?>
+<launch>  
+  <node pkg='curved_clustering_code' type='curved_clustering_code_merge' name='curved_clustering_code_merge' output="screen" >
+  </node>
+</launch>

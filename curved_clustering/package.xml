@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>curved_clustering</name>
+  <version>1.2.0</version>
+  <description>The curved_clustering package</description>
+  <license>TODO</license>
+  <maintainer email="linus3390@yonsei.ac.kr">Segul Roh</maintainer>
+  <buildtool_depend>catkin</buildtool_depend>
+  <exec_depend>curved_clustering_bringup</exec_depend>
+  <exec_depend>curved_clustering_description</exec_depend>
+  <exec_depend>curved_clustering_code</exec_depend>
+  <export><metapackage/></export>
+</package>
